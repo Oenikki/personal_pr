@@ -48,6 +48,30 @@ public:
 };
 }
 
+namespace hh435 {
+class Solution {
+    int eraseOverlapIntervals(std::vector<std::vector<int>>& intervals) {
+        if (intervals.empty()) {
+            return 0;
+        }
+        std::sort(intervals.begin(), intervals.end(),
+            [](std::vector<int>& interval1, std::vector<int>& interval2) {
+            return interval1[1] < interval2[1];
+        });
+        int num_erase = 0;
+        int prev = intervals[0][1];
+        for (size_t i = 1; i < intervals.size(); ++i) {
+            if (intervals[i][0] < prev) {
+                ++num_erase;
+            } else {
+                prev = intervals[i][1];
+            }
+        }
+        return num_erase;
+    }
+};
+}
+
 int main() {
     std::vector<int> g;
     std::vector<int> s;
