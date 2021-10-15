@@ -1,8 +1,9 @@
-//leetcode 455 & 135 & 435
+//leetcode 455 & 135 & 435 & 605
 #include <iostream>
 #include <vector>
 #include <algorithm> //std::max
 #include <numeric> //std::accumulate
+#include <cstdlib> //size_t
 
 namespace hh145 {
 class Solution {
@@ -69,6 +70,25 @@ class Solution {
         }
         return num_erase;
     }
+};
+}
+
+namespace hh605 {
+class Solution {
+public:
+	bool canPlaceFlowers(std::vector<int>& flowerbed, int n) {
+		for (size_t i = 0; i < flowerbed.size(); ++i) {
+			if (flowerbed[i] == 0 &&
+				(i + 1 == flowerbed.size() || flowerbed[i + 1] == 0)) {
+				--n;
+				i++;
+			}
+			else if (flowerbed[i] == 1) {
+				i++;
+			}
+		}
+		return n <= 0;
+	}
 };
 }
 
