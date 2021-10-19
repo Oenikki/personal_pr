@@ -116,6 +116,37 @@ public:
 };
 }
 
+namespace hh763 {
+class Solution{
+    std::vector<int> partitionLables(string s) {
+        int max_index[26];
+        std::vector<int> res;
+        for (size_t i = 0; i < s.length(); ++i) {
+            max_index[s[i] - 'a'] = i;
+        }
+        int l_interval = 0;
+        int r_interval = 0;
+        for (size_t i = 0; i < s.length(); ++i) {
+            r_interval = std::max(r_interval, max_index(s[i] - 'a'));
+            if (i == r_interval) {
+                res.push_back(r_interval - l_interval + 1);
+                l_interval = r_interval + 1;
+            }
+        }
+        return res;
+    }
+};
+}
+
+namespace hh122 {
+class Solution {
+public:
+    int maxProfit(std::vector<int>& prices) {
+
+    }
+};
+}
+
 int main() {
     std::vector<int> g;
     std::vector<int> s;
