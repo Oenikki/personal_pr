@@ -118,7 +118,7 @@ public:
 
 namespace hh763 {
 class Solution{
-    std::vector<int> partitionLables(string s) {
+    std::vector<int> partitionLables(std::string s) {
         int max_index[26];
         std::vector<int> res;
         for (size_t i = 0; i < s.length(); ++i) {
@@ -127,7 +127,7 @@ class Solution{
         int l_interval = 0;
         int r_interval = 0;
         for (size_t i = 0; i < s.length(); ++i) {
-            r_interval = std::max(r_interval, max_index(s[i] - 'a'));
+            r_interval = std::max(r_interval, max_index[s[i] - 'a']);
             if (i == r_interval) {
                 res.push_back(r_interval - l_interval + 1);
                 l_interval = r_interval + 1;
@@ -142,7 +142,44 @@ namespace hh122 {
 class Solution {
 public:
     int maxProfit(std::vector<int>& prices) {
+        if (prices.empty()) {
+            return 0;
+        }
+        const int n = prices.size();
+        /*
+        int dp[n][2];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for (size_t i = 1; i < n; ++i) {
+            dp[i][0] = std::max(dp[i - 1][1] + prices[i], dp[i - 1][0]);
+            dp[i][1] = std::max(dp[i - 1][0] - prices[i], dp[i - 1][1]);
+        }
+        return dp[n - 1][0];
+        */
+        int buied = -prices[0];
+        int reserved = 0;
+        for (size_t i = 1; i < n; ++i) {
+            int reserved_tmp = std::max(reserved, buied + prices[i]);
+            int buied_tmp = std::max(buied, reserved - prices[i]);
+            reserved = reserved_tmp;
+            buied = buied_tmp;
+        }
+        return reserved;
+    }
+};
 
+class Solution2 {
+public:
+    /* basic intuition:
+     * If the next day's price is greater than the former day,
+     * it's properly to buy the stock.*/
+    int maxProfit(std::vector<int>& prices) {
+        int profit = 0;
+        //During the process, only need to accumulate the potential value.
+        for (size_t i = 1; i < prices.size(); ++i) {
+            profit += prices[i] > prices[i - 1] ? prices[i] - prices[i - 1] : 0;
+        }
+        return profit;
     }
 };
 }
