@@ -185,7 +185,7 @@ public:
 }
 
 namespace hh406 {
-class Solution{
+class Solution {
 public:
     /** intuition:
       * Higher people can not see shorter people.
@@ -206,6 +206,26 @@ public:
         return ans;
     }
 };
+
+namespace hh665 {
+class Solution {
+public:
+    bool checkPossibility(std::vector<int>& nums) {
+        int count = 0;
+        for (size_t i = 1; i < nums.size(); ++i) {
+            if (nums[i] < nums[i - 1]) {
+                ++count;
+                if (i == 1 || nums[i] >nums[i - 2]) {
+                    nums[i - 1] = nums[i];
+                } else {
+                    nums[i] = nums[i - 1];
+                }
+            }
+        }
+        return count <= 1;
+    }
+};
+}
 
 }
 
