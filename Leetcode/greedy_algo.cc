@@ -184,6 +184,31 @@ public:
 };
 }
 
+namespace hh406 {
+class Solution{
+public:
+    /** intuition:
+      * Higher people can not see shorter people.
+      * In other world, we sort the people from high to short, and re-arrange them.
+      * The latter people who is inserted in the queue that will not affects the previous results.*/
+    std::vector<std::vector<int>> reconstructQueue(std::vector<std::vector<int>>& people) {
+        std::vector<std::vector<int>> ans;
+        if (people.empty()) {
+            return ans;
+        }
+        std::sort(people.begin(), people.end(),
+            [](std::vector<int>& p1, std::vector<int>& p2) {
+            return p1[0] > p2[0] || (p1[0] == p2[0] && p1[1] < p2[1]);
+        });
+        for(auto p : people) {
+            ans.insert(ans.begin() + p[1], p);
+        }
+        return ans;
+    }
+};
+
+}
+
 int main() {
     std::vector<int> g;
     std::vector<int> s;
