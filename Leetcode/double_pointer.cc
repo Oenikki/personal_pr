@@ -1,5 +1,12 @@
 #include <vector>
+#include <string>
 using namespace std;
+
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(nullptr) {}
+};
 
 namespace hh167 {
 class Solution{
@@ -33,6 +40,40 @@ public:
         while (n >= 0) {
             nums1[pos--] = nums2[n--];
         }
+    }
+};
+}
+
+namespace hh142 {
+class Solution{
+public:
+    ListNode *detectCycle(ListNode *head) {
+        ListNode *fast = head;
+        ListNode *slow = head;
+        do {
+            if (!fast || !fast->next) {
+                return nullptr;
+            }
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        while (fast != slow);
+        fast = head;
+        while (fast != slow) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+        return fast;
+    }
+};
+}
+
+namespace hh76 {
+class Solution{
+public:
+    string minWindow(string s, string t) {
+        string ans;
+
     }
 };
 }
