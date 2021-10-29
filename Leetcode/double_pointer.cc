@@ -149,3 +149,29 @@ private:
 };
 }
 
+namespace hh524 {
+class Solution{
+public:
+    string findLongestWord(string s, vector<string>& dictionary) {
+        string ans;
+        for (const auto& str : dictionary) {
+            int i = 0;
+            int j = 0;
+            while (i < s.length() && j < str.length()) {
+                if (s[i] == str[j]) {
+                    ++j;
+                }
+                ++i;
+            }
+            if (j == str.size()) {
+                if (str.length() > ans.length() ||
+                    (str.length() == ans.lenght() && str < ans)) {
+                    ans = str;
+                }
+            }
+        }
+        return ans;
+    }
+};
+}
+
