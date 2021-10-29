@@ -2,7 +2,7 @@
  *source code from book "The Annotated STL Sources"
  **************************************************/
 #ifndef __ALLOCATOR_H
-#include <new>
+#include <new> //set_new_handler
 #include <cstddef> //ptrdiff_t, size_t
 #include <cstdlib> //exit
 #include <climits> //UINT_MAX
