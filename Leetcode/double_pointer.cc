@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <math.h>
+#include <unordered_map>
 using namespace std;
 
 struct ListNode {
@@ -165,13 +166,42 @@ public:
             }
             if (j == str.size()) {
                 if (str.length() > ans.length() ||
-                    (str.length() == ans.lenght() && str < ans)) {
+                    (str.length() == ans.length() && str < ans)) {
                     ans = str;
                 }
             }
         }
         return ans;
     }
+};
+}
+
+namespace hh340 {
+class Solution{
+/* description:
+ * 至多包含 K 个不同字符的最长子串
+ * input: s = "aceba" k = 2
+ * output: 3
+ *--------------------------------
+ * input: s = "aa" k = 1
+ * output: 2
+ */
+ int lengthOfLongestSubstringKDistinct(string s, int k) {
+    int res = 0;
+    unordered_map<char, int> m;
+    for (int l = 0, r = 0; r < s.length(); ++r) {
+        m[s[r]]++;
+        while (m.size() > k && l < s.length()) {
+            m[s[l]]--;
+            if (m.count(s[l]) && m[s[l]] == 0) {
+                m.erase(s[l]);
+            }
+            l++;
+        }
+        res = max(res, r - l + 1);
+    }
+    return res;
+ }
 };
 }
 
