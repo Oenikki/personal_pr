@@ -97,9 +97,51 @@ public:
 };
 }
 
+namespace hh154 {
+class Solution{
+    int findMin(vector<int>& nums) {
+        int l = 0, r = nums.size() - 1;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (nums[mid] < nums[r]) {
+                r = mid;
+            } else if (nums[mid] > nums[r]) {
+                l = mid + 1;
+            } else {
+                --r;
+            }
+        }
+        return nums[l];
+    }
+
+    int findMin2(vector<int>& nums) {
+        int l = 0;
+        int r = nums.size() - 1;
+        if (nums[r] > nums[l]) {
+            return nums[l];
+        }
+        while (l <= r) {
+            if (nums[r] > nums[l]) {
+                return nums[l];
+            }
+            int mid = l + (r - l) / 2;
+            if (nums[l] < nums[mid]) {
+                l = mid + 1;
+            } else if (nums[l] > nums[mid]) {
+                r = mid;
+                l++;
+            } else {
+                l++;
+            }
+        }
+        return nums[mid];
+    }
+};
+}
+
 int main() {
-    std::vector<int> nums = {5, 7, 7, 8, 8, 10};
+    std::vector<int> nums = {2, 2, 2, 0, 1};
     int target = 8;
-    hh34::Solution().searchRange(nums, target);
+    hh154::Solution().findMin2(nums);
     return 0;
 }
