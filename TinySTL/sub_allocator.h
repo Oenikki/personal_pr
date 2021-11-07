@@ -45,11 +45,10 @@ public:
     }
 };
 
-template<int inst> {
+template<int inst>
 void (*__malloc__alloc_template<inst>::__malloc_alloc_oom_handler) () = 0;
-}
 
-template<inst inst> {
+template<inst inst> 
 void *__malloc_alloc_template<inst>::oom_alloc(size_t n) {
     void (*my_myalloc_handler)();
     void *result;
@@ -81,7 +80,5 @@ void *__mallo_alloc_template<inst>::oom_realloc(void *p, size_t n) {
             return result;
         }
     }
-}
-}
 }
 }
