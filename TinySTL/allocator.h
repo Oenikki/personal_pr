@@ -7,6 +7,7 @@
 #include <cstdlib> //exit
 #include <climits> //UINT_MAX
 #include <iostream>
+#include <algobase.h>
 
 namespace SimpleAlloc{
 template<typename T>
