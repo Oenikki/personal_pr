@@ -52,7 +52,7 @@ class Solution1 {
 public:
     int maxAreaOfIsland(vector<vector<int>>& grid) {
         const int m = grid.size();
-        const int n = m ? gird[0].size() : 0;
+        const int n = m ? grid[0].size() : 0;
         int area = 0;
         for (size_t i = 0; i < m; ++i) {
             for (size_t j = 0; j < n; ++j) {
@@ -75,8 +75,7 @@ private:
             int new_i = i + dir[d];
             int new_j = j + dir[d + 1];
             if (0 <= new_i && new_i < grid.size() &&
-                0 <= new_j && new_j < grid[0].size() &&
-                ) {
+                0 <= new_j && new_j < grid[0].size()) {
                 area += dfs(grid, new_i, new_j);
             }
         }
@@ -104,12 +103,61 @@ public:
 private:
     void dfs(vector<vector<int>>& isConnected, int i, vector<bool>& visited) {
         visited[i] = true;
-        for (size_t j = 0; j < isConnected.size(); ++k) {
-            if (isConnected[i][j] == 1 && !visited[k]) {
-                dfs(isConnected, k, visited);
+        for (size_t j = 0; j < isConnected.size(); ++j) {
+            if (isConnected[i][j] == 1 && !visited[j]) {
+                dfs(isConnected, j, visited);
             }
         }
     }
+};
+}
+
+namespace hh417 {
+class Solution {
+public:
+    vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
+        const int m = height.size();
+        const int n = m ? height[0].size() : 0;
+        vector<vector<int>> ans;
+        vector<vector<bool>> can_reach_pacific(m, vector<bool>(n, false));
+        vector<vector<bool>> can_reach_atlantic(n, vector<bool>(n, false));
+        for (int i = 0; i < m; ++i) {
+            dfs(heights, can_reach_pacific, i, 0);
+            dfs(heights, can_reach_atlantic, i, n - 1);
+        }
+
+        for (int i = 0; i < n; ++i) {
+            dfs(heights, can_reach_pacific, 0, i);
+            dfs(heights, can_reach_atlantic, m - 1, i);
+        }
+
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (can_reach_atlantic[i][j] && can_reach_pacific[i][j]) {
+                    ans.push_back({i, j});
+                }
+            }
+        }
+        return ans;
+    }
+private:
+    void dfs(vector<vector<int>>& heights, vector<vector<bool>>& rpa, int i, int j) {
+        if (rpa[i][j]) {
+            return;
+        }
+        rpa[i][j] = true;
+        for (size_t d = 0; d < 4; ++d) {
+            int new_i = i + dir[d];
+            int new_j = j + dir[d + 1];
+            if (0 <= new_i && new_i < heights.size() &&
+                0 <= new_j && new_j < heights[0].size() &&
+                heights[new_i][new_j] >= heights[i][j]) {
+                dfs(height, rpa, new_i, new_j);
+            }
+        }
+    }
+private:
+    vector<int> dir {-1, 0, 1, 0, -1};
 };
 }
 
