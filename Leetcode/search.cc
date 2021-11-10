@@ -116,11 +116,11 @@ namespace hh417 {
 class Solution {
 public:
     vector<vector<int>> pacificAtlantic(vector<vector<int>>& heights) {
-        const int m = height.size();
-        const int n = m ? height[0].size() : 0;
+        const int m = heights.size();
+        const int n = m ? heights[0].size() : 0;
         vector<vector<int>> ans;
         vector<vector<bool>> can_reach_pacific(m, vector<bool>(n, false));
-        vector<vector<bool>> can_reach_atlantic(n, vector<bool>(n, false));
+        vector<vector<bool>> can_reach_atlantic(m, vector<bool>(n, false));
         for (int i = 0; i < m; ++i) {
             dfs(heights, can_reach_pacific, i, 0);
             dfs(heights, can_reach_atlantic, i, n - 1);
@@ -152,12 +152,67 @@ private:
             if (0 <= new_i && new_i < heights.size() &&
                 0 <= new_j && new_j < heights[0].size() &&
                 heights[new_i][new_j] >= heights[i][j]) {
-                dfs(height, rpa, new_i, new_j);
+                dfs(heights, rpa, new_i, new_j);
             }
         }
     }
 private:
     vector<int> dir {-1, 0, 1, 0, -1};
+};
+}
+
+namespace hh46 {
+class Solution{
+public:
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> ans;
+        backtracking(nums, 0, ans);
+        for (auto v : ans) {
+            for (int i : v) {
+                cout << i << " ";
+            }
+            cout << endl;
+        }
+        return ans;
+    }
+private:
+    void backtracking(vector<int>& nums, int level, vector<vector<int>>& ans) {
+        if (level == nums.size() - 1) {
+            ans.push_back(nums);
+            return;
+        }
+        for (int i = level; i < nums.size(); ++i) {
+            swap(nums[i], nums[level]);
+            backtracking(nums, level + 1, ans);
+            swap(nums[i], nums[level]);
+        }
+    }
+};
+}
+
+namespace hh77 {
+class Solution{
+public:
+    vector<vector<int>> combine(int n, int k) {
+        vector<vector<int>> ans;
+        vector<int> comb(k, 0);
+        int count = 0;
+        backtracking(ans, comb, count, 1, n, k);
+        return ans;
+    }
+private:
+    void backtracking(vector<vector<int>>& ans, vector<int> comb,
+                      int pos, int n, int k) {
+        if (count == k) {
+            ans.push_back(ans);
+            return;
+        }
+        for (int i = pos; i <= n - (k - ans.size()) + 1; ++i) { //¼ôÖ¦
+            comb[count++] = i;
+            backtracking(ans, comb, i + 1, n, k);
+            --count;
+        }
+    }
 };
 }
 
