@@ -202,17 +202,63 @@ public:
     }
 private:
     void backtracking(vector<vector<int>>& ans, vector<int> comb,
-                      int pos, int n, int k) {
+                      int& count, int pos, int n, int k) {
         if (count == k) {
-            ans.push_back(ans);
+            ans.push_back(comb);
             return;
         }
-        for (int i = pos; i <= n - (k - ans.size()) + 1; ++i) { //¼ôÖ¦
+        for (int i = pos; i <= n - (k - ans.size()) + 1; ++i) {
             comb[count++] = i;
-            backtracking(ans, comb, i + 1, n, k);
+            backtracking(ans, comb, count, i + 1, n, k);
             --count;
         }
     }
+};
+}
+
+namespace hh79 {
+class Solution {
+    bool exist(vector<vector<char>>& board, string word) {
+        const int m = board.size();
+        const int n = board[0].size();
+        vector<vector<bool>> visited(m, vector<bool>(n, false));
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                visited[i][j] = true;
+                if (board[i][j] == word[0] &&
+                    backtracking(board, word, visited, i, j, 0)) {
+                    return true;
+                }
+                visited[i][j] = false;
+            }
+        }
+        return false;
+    }
+private:
+    bool backtracking(vector<vector<char>>& board, const std::string& word,
+                      vector<vector<bool>>& visited, int i, int j, int pos) {
+        if (pos == word.length() - 1) {
+            return true;
+        }
+        for (int d = 0; d < 4; ++d) {
+            int new_i = i + dir[d];
+            int new_j = j + dir[d + 1];
+            if (0 <= new_i && new_i < board.size() &&
+                0 <= new_j && new_j < board[0].size()) {
+                if (visited[new_i][new_j] || board[new_i][new_j] != word[pos + 1]) {
+                    continue;
+                }
+                visited[new_i][new_j] = true;
+                if (backtracking(board, word, visited, new_i, new_j, pos + 1)) {
+                    return true;
+                }
+                visited[new_i][new_j] = false;
+            }
+        }
+        return false;
+    }
+private:
+    vector<int> dir {-1, 0, 1, 0, -1};
 };
 }
 
