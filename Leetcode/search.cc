@@ -1,9 +1,11 @@
 #include <vector>
+#include <string>
 #include <stack>
 #include <utility> //pair
 #include <iostream>
 #include <cstdlib> //size_t
 #include <algorithm> //std::max
+#include <set>
 
 using namespace std;
 
@@ -259,6 +261,85 @@ private:
     }
 private:
     vector<int> dir {-1, 0, 1, 0, -1};
+};
+}
+
+namespace hh51 {
+class Solution {
+public:
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> ans;
+        if (!n) return ans;
+        vector<string> board(n, string(n, '.'));
+        vector<bool> column(n, false), ldiag(2 * n - 1, false), rdiag(2 * n - 1, false);
+        backtracking(ans, board, column, ldiag, rdiag, 0, n);
+        return ans;
+    }
+private:
+    void backtracking(vector<vector<string>>& ans, vector<string>& board,
+                      vector<bool>& column, vector<bool>& ldiag,
+                      vector<bool>& rdiag, int row, int n) {
+        if (row == n) {
+            ans.push_back(board);
+            return;
+        }
+        for (int i = 0; i < n; ++i) {
+            if (column[i] || ldiag[n - row + i - 1] || rdiag[row + i + 1]) {
+                continue;
+            }
+            board[row][i] = 'Q';
+            column[i] = ldiag[n - row + i - 1] = rdiag[row + i + 1] = true;
+            backtracking(ans, board, column, ldiag, rdiag, row + 1,  n);
+            board[row][i] = '.';
+            column[i] = ldiag[n - row + i - 1] = rdiag[row + i + 1] = false;
+        }
+    }
+};
+
+class Solution1 {
+public:
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> res;
+        vector<vector<bool>> board;
+        std::set<int> col, ldiag, rdiag;
+        dfs(res, board, col, ldiag, rdiag, 0, n);
+        return res;
+    }
+private:
+    void dfs(vector<vector<string>>& res, vector<vector<bool>>& board, set<int>& col,
+             set<int>& ldiag, set<int>& rdiag, int i, int n) {
+        if (i == n) {
+            vector<string> tmp;
+            for (int x = 0; x < n; ++x) {
+                string str;
+                for (int y = 0; y < n; ++y) {
+                    if (board[x][y]) {
+                        str += "Q";
+                    } else {
+                        str += ".";
+                    }
+                }
+                tmp.push_back(str);
+            }
+            res.push_back(tmp);
+            return;
+        }
+        for (int j = 0; j < n; ++j) {
+            if (col.count(i) || ldiag.count(i + j) || rdiag.count(i - j)) {
+                continue;
+            }
+            board[i][j] = true;
+            col.insert(i);
+            ldiag.insert(i + j);
+            rdiag.insert(i - j);
+            dfs(res, board, col, ldiag, rdiag, i + 1, n);
+            col.erase(i);
+            ldiag.erase(i + j);
+            rdiag.erase(i - j);
+            board[i][j] = false;
+        }
+    }
+
 };
 }
 
