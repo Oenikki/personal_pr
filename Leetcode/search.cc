@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdlib> //size_t
 #include <algorithm> //std::max
+#include <queue>
 #include <set>
 
 using namespace std;
@@ -340,6 +341,71 @@ private:
         }
     }
 
+};
+}
+
+namespace hh934 {
+class Solution {
+public:
+    /**Mark:
+     * using dfs to find one island -> refer to LC 200.
+     */ 
+    int shortestBridge(vector<vector<int>>& grid) {
+        const int m = grid.size();
+        const int n = grid[0].size();
+        queue<pair<int, int>> points;
+        //find one island using dfs
+        bool found = false;
+        for (int i = 0; i < m && !found; ++i) {
+            for (int j = 0; j < n && !found; ++j) {
+                if (grid[i][j]) {
+                    dfs(points, grid, m, n, i, j);
+                    found = true;
+                }
+            }
+        }
+
+        int level = 0;
+        while (!points.empty()) {
+            int num = points.size();
+            while (num--) {
+                auto [r, c] = points.front();
+                points.pop();
+                for (int d = 0; d < 4; ++d) {
+                    int new_r = r + dir[d];
+                    int new_c = c + dir[d + 1];
+                    if (0 <= new_r && new_r < m &&
+                        0 <= new_c && new_c < n) {
+                        if (grid[new_r][new_c] == 2) {
+                            continue;
+                        }
+                        if (grid[new_r][new_c] == 1) {
+                            return level;
+                        }
+                        points.emplace(new_r, new_c);
+                        grid[new_r][new_c] = 2;
+                    }
+                }
+            }
+            ++level;
+        }
+        return 0;
+    }
+private:
+    void dfs(queue<pair<int, int>>& points, vector<vector<int>>& grid,
+             int m, int n, int i, int j) {
+        if (i < 0 || j < 0 || i >= m || j >= n || grid[i][j] != 1) {
+            return;
+        }
+        grid[i][j] = 2;
+        points.emplace(i, j);
+        dfs(points, grid, m, n, i - 1, j);
+        dfs(points, grid, m, n, i + 1, j);
+        dfs(points, grid, m, n, i, j - 1);
+        dfs(points, grid, m, n, i, j + 1);
+    }
+private:
+    vector<int> dir {-1, 0, 1, 0, -1};
 };
 }
 
