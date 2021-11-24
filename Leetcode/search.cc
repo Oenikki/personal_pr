@@ -409,6 +409,85 @@ private:
 };
 }
 
+namespace hh127 {
+class Solution {
+public:
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        //BFS -> bidirectional BFS
+        /**pseudo code for BFS
+         * q.push(start)
+         * step = 0
+         * while not q.empty
+         *  ++step
+         *  size = q.size()
+         *  while size-- > 0
+         *    node = q.pop()
+         *    new_node = expand(node)
+         *    if goal in new node: return step + 1
+         *    q.append(new_node)
+         * return NOT_FOUND
+         * ****************************************************************
+         * pesudo code for bidirectional BFS
+         * s1.insert(start)
+         * s2.insert(end)
+         * step = 0
+         * while not (s1.empty() || s2.empty())
+         *   ++step
+         *   swap*(s1, s2)
+         *   s = {}
+         *   for node in s1:
+         *     new_nodes = expand(node)
+         *     if any(new_nodes) in s2: return step + 1
+         *     s.append(new_nodes)
+         *   s1 = s
+         * return NOT_FOUND
+         */ 
+        unordered_set<string> dict (wordList.begin(), wordList.end());
+        if (!dict.count(endWord)) return 0;
+
+        queue<string> q;
+        //unordered_map<string, int> words;
+        words[beginWord] = -1;
+        q.push(beginWord);
+
+        int l = beginWord.length();
+        int step = 0;
+        while (!q.empty()) {
+            ++step;
+            for (int i = q.size(); i > 0; --i) {
+                string w = q.front();
+                q.pop();
+                //int loc = words[w];
+                for (int j = 0; j < l; ++j) {
+                    //if (j == loc) continue;
+                    char ch = w[i];
+                    for (int k = 'a'; k <= 'z'; ++k) {
+                        w[j] = k;
+                        if (w == endWord) 
+                            return step + 1;
+                        if (dict.count(w)) continue;
+                        //words[w] = j;
+                        dict.erase(w);
+                        q.push(w);
+                    }
+                    w[i] = ch;
+                }
+            }
+        }
+        return 0;
+    }
+}
+}
+
+namespace hh126 {
+class Solution {
+public:
+    vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {
+
+    }
+};
+}
+
 int main() {
     return 0;
 }
