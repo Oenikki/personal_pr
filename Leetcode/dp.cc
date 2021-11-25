@@ -34,5 +34,20 @@ public:
 }
 }
 
-namespace hh
+namespace hh1137 {
+class Solution {
+public:
+    int tribonacci(int n) {
+        if (n <= 1) return n;
+        if (n == 2) return 1;
+        int f = 0, g = 1, h = 1;
+        for (int i = 3; i <= n; ++i) {
+            h = f + g + h;
+            g = h - f - g;
+            f = h - f - g;
+        }
+        return h;
+    }
+}
+}
 
