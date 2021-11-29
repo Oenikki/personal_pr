@@ -1,4 +1,5 @@
-#include<vector>
+#include <vector>
+#include <string>
 
 
 namespace hh509 {
@@ -17,7 +18,7 @@ private:
     }
 private:
     std::vector<int> cached;
-}
+};
 
 class Solution2 {
 public:
@@ -31,7 +32,7 @@ public:
         }
         return g;
     }
-}
+};
 }
 
 namespace hh1137 {
@@ -48,6 +49,43 @@ public:
         }
         return h;
     }
+};
 }
+
+namespace hh70 {
+class Solution{
+public:
+    int climbStairs(int n) {
+        if (n < 0) return 0;
+        if (n <= 2) return n;
+        vector<int> dp(n + 1, 1);
+        for (int i = 2; i <= n; ++i) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        //can left food on right food to climb sky :)
+        int f = 1, g = 1;
+        for (size_t i = 2; i < n + 1; ++i) {
+            g = f + g;
+            f = g - f;
+        }
+        return g; //g <-> dp[n]
+    }
+};
+}
+
+namespace hh198 {
+class Solution{
+public:
+    int rob(vector<int>& nums) {
+        //dp[n] = max(dp[n - 1], dp[n - 2] + nums[n - 1]
+        const int n = nums.size();
+        vector<int> dp(n + 1, 0);
+        dp[1] = nums[0];
+        for (int i = 2; i < n + 1; ++i) {
+            dp[i] = std::max(dp[i - 1], dp[i - 2] + nums[i - 1]);
+        }
+        return dp[n];
+    }
+};
 }
 
