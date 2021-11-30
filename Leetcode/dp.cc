@@ -1,5 +1,7 @@
 #include <vector>
 #include <string>
+#include <numeric> //std::accumulate
+using namespace std;
 
 
 namespace hh509 {
@@ -79,13 +81,62 @@ public:
     int rob(vector<int>& nums) {
         //dp[n] = max(dp[n - 1], dp[n - 2] + nums[n - 1]
         const int n = nums.size();
+        /*
         vector<int> dp(n + 1, 0);
         dp[1] = nums[0];
         for (int i = 2; i < n + 1; ++i) {
             dp[i] = std::max(dp[i - 1], dp[i - 2] + nums[i - 1]);
         }
         return dp[n];
+        */
+        //compress
+        int dp1 = 0, dp2 = 0, dp;
+        for (int i = 2; i < n + 1; ++i) {
+            dp = std::max(dp1, dp2 + nums[i - 1]);
+            dp2 = dp1;
+            dp1 = dp;
+        }
+        return dp;
     }
 };
 }
 
+namespace hh413 {
+class Solution {
+public:
+    int numberOfArithmeticSlices(vector<int>& nums) {
+        const int n = nums.size();
+        vector<int> dp(n, 0);
+        for (size_t i = 2; i < n; ++i) {
+            if (nums[i] - nums[i - 1] == nums[i - 1] - nums[i - 2])
+                dp[i] = dp[i - 1] + 1;
+        }
+        return std::accumulate(dp.begin(), dp.end(), 0);
+    }
+};
+}
+
+namespace hh64 {
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        const int m = grid.size();
+        const int n = m ? grid[0].size() : 0;
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        for(size_t i = 0; i < m; ++i) {
+            for (size_t j = 0; j < n; ++j) {
+                if (i == 0 && j == 0) {
+                    dp[i][j] = grid[i][j];
+                } else if (i == 0) {
+                    dp[i][j] = dp[i][j - 1] + grid[i][j];
+                } else if (j == 0) {
+                    dp[i][j] = dp[i - 1][j] + grid[i][j];
+                } else {
+                    dp[i][j] = std::min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j];
+                }
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+};
+}
