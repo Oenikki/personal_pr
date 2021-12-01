@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <numeric> //std::accumulate
+#include <limits> //INT_MAX
 using namespace std;
 
 
@@ -122,6 +123,7 @@ public:
     int minPathSum(vector<vector<int>>& grid) {
         const int m = grid.size();
         const int n = m ? grid[0].size() : 0;
+        /*
         vector<vector<int>> dp(m, vector<int>(n, 0));
         for(size_t i = 0; i < m; ++i) {
             for (size_t j = 0; j < n; ++j) {
@@ -137,6 +139,84 @@ public:
             }
         }
         return dp[m - 1][n - 1];
+        */
+        //compress
+        vector<int> dp(n, 0);
+        for (size_t i = 0; i < m; ++i) {
+            for (size_t j = 0; j < n; ++j) {
+                if (i == 0 && j == 0) {
+                    dp[j] = 0;
+                } else if (i == 0) {
+                    dp[j] = dp[j - 1] + grid[i][j];
+                } else if (j == 0) {
+                    dp[j] = dp[j] + grid[i][j];
+                } else {
+                    dp[j] = std::min(dp[j - 1], dp[j]) + grid[i][j];
+                }
+            }
+        }
+        return dp[n - 1];
+    }
+};
+}
+
+namespace hh542 {
+class Solution {
+public:
+    /**
+     * method 1:
+        dp twice, once right and down, once left and up;
+     * method 2:
+        BFS
+     */
+    vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
+        const int m = mat.size();
+        const int n = mat[0].size();
+        vector<vector<int>> dp(m, vector<int>(n, INT_MAX / 2));
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (mat[i][j] == 0) {
+                    dp[i][j] = 0;
+                } else {
+                    if (i > 0) {
+                        dp[i][j] = std::min(dp[i][j], dp[i - 1][j] + 1);
+                    }
+                    if (j > 0) {
+                        dp[i][j] = std::min(dp[i][j], dp[i][j - 1] + 1);
+                    }
+                }
+            }
+        }
+
+        for (int i = m - 1; i >= 0; --i) {
+            for (int j = n - 1; j >= 0; --j) {
+                if (mat[i][j]) {
+                    if (i < m - 1) {
+                        dp[i][j] = std::min(dp[i][j], dp[i + 1][j] + 1);
+                    }
+                    if (j < n - 1) {
+                        dp[i][j] = std::min(dp[i][j], dp[i][j + 1] + 1);
+                    }
+                }
+            }
+        }
+        return dp;
+    }
+};
+
+class Solution2 {
+public:
+    vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
+        int m = mat.size();
+        int n = mat[0].size();
+        vector<vector<int>> visited(m, vector<int>(n, 0));
+
+        queue<pair<int, int>> q;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if ()
+            }
+        }
     }
 };
 }
