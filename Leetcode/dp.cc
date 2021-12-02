@@ -2,6 +2,8 @@
 #include <string>
 #include <numeric> //std::accumulate
 #include <limits> //INT_MAX
+#include <queue>
+#include <cmatch> //sqrt, ceil
 using namespace std;
 
 
@@ -206,17 +208,85 @@ public:
 
 class Solution2 {
 public:
+    //BFS
     vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
         int m = mat.size();
         int n = mat[0].size();
         vector<vector<int>> visited(m, vector<int>(n, 0));
-
+        vector<vector<int>> ans(m, vector<int>(n, 0));
         queue<pair<int, int>> q;
         for (int i = 0; i < m; ++i) {
             for (int j = 0; j < n; ++j) {
-                if ()
+                if (mat[i][j] == 0) {
+                    q.emplace(i, j);
+                    visited[i][j] = 1;
+                }
             }
         }
+        while (!q.empty())  {
+            auto [i, j] = q.front();
+            q.pop();
+            for (size_t d = 0; d < 4; ++d) {
+                int new_i = i + dir[d];
+                int new_j = j + dir[d + 1];
+                if (0 <= new_i && new_i < m &&
+                    0 <= new_j && new_j < n &&
+                    !visited[new_i][new_j]) {
+                    ans[new_i][new_j] =  ans[i][j] + 1;
+                    q.emplace(new_i, new_j);
+                    visited[new_i][new_j] = 1;
+                }
+            }
+        }
+        return ans;
+    }
+private:
+    vector<int> dir {-1, 0, 1, 0, -1};
+};
+}
+
+namespace hh221 {
+class Solution {
+public:
+    int maximalSquare(vector<vector<char>>& matrix) {
+        int m = matrix.size();
+        int n = matrix[0].size();
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+        int max_edge = 0;
+        auto fmin = [](int a, int b, int c) {
+            return std::min(std::min(a, b), c);
+        };
+        for (size_t i = 1; i < m + 1; ++i) {
+            for (size_t j = 1; j < n + 1; ++j) {
+                if (matrix[i - 1][j - 1] == '1') {
+                    dp[i][j] = fmin(dp[i - 1][j -1], dp[i - 1][j], dp[i][j - 1]) + 1;
+                }
+                max_edge = std::max(max_edge, dp[i][j]);
+            }
+        }
+        return max_edge * max_edge;
     }
 };
+}
+
+namespace hh279 {
+class Solution {
+public:
+    int numSquares(int n) {
+        //apparently minimum value only related to
+        //index i - 1, i - 4, i - 9 ...
+        //so f = 1 + min(f(i - 1) + f(1 - 4) + ...)
+        vector<int> dp(n + 1, INT_MAX);
+        for (size_t i = 1; i <= n; ++i) {
+            for (size_t j = 1; j * j <= i; ++j) {
+                dp[i] = min(dp[i], dp[i - j * j] + 1);
+            }
+        }
+        return dp[n];
+    }
+};
+}
+
+int main() {
+
 }
