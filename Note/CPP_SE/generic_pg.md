@@ -111,17 +111,180 @@ T max(T a, T b) {
 
 
 
-## 类模板
-
-
-
-
-
-
-
-
-
 ## 二、类模板
+
+Concept：用来约束模板类型的语法糖。
+
+C++11简单实用关键字static_assert和预定义的类型萃取做一些简单的检查：
+
+```c++
+template<typename T>
+class C {
+	static_assert(std::is_default_constructible<T>::value, "//...");
+};
+```
+
+
+
+### 1. 模板特例化
+
+可以对类模板的某一个模板参数进行例化。和函数模板的重载类似。
+
+为了特化一个模板，在类模板前需有一个template<>
+
+```c++
+template<>
+class Stack<std::string> {
+	//...
+};
+```
+
+**被特化的模板，所有成员函数的定义都应该被定义成“常规”成员函数，即出现T的地方，都应该替换成特化类模板的类型**。
+
+
+
+**部分特例化**
+
+比如可以特殊化一个Stack<>专门处理指针
+
+```c++
+template<typename T>
+class Stack<T*> {
+	//...
+};
+```
+
+
+
+**多模板参数的部分特例化**
+
+```c++
+template<typename T1, typename T2>
+class MyClass {
+	//...
+};
+
+template<typename T>
+class MyClass<T, T> {
+    //...
+};
+
+template<typename T>
+class MyClass<T, int> {
+    //...
+};
+```
+
+
+
+**默认类模板参数**
+
+和函数模板一样，类模板的模板参数可以指定默认值。
+
+```c++
+template<typenae T, typename Cont = std::vector<T>>
+class Stack {
+	//...
+};
+```
+
+
+
+### 2. 类型别名
+
+通过给类模板定义个新的名字，便于使用。
+
+**Typedefs和Alias声明**
+
+```c++
+typedef Stack<int> IntStack;
+IntStack istack[10];
+//or
+using IntStack = Stack<int>
+```
+
+这样一个过程alias declaration，只是一个别名，没有定义新的变量。
+
+
+
+**Alias Template**
+
+补充：
+
++ class template
++ function template
++ variable template
++ alias template
+
+```c++
+template<typaname T>
+using DequeStack = Stack<T, std::deque<T>>;
+```
+
+从C++14开始，给标准库中所有返回一个类型的type trait定义个快捷方式
+
+```c++
+std::add_const_t<T>
+//typename std::add_const<T>::type
+
+namespace std {
+	template<typename T>
+	using add_const_t = typename add_cosnt<T>::type;
+}
+```
+
+这样一个特性是alias template发挥作用。
+
+
+
+### 3. 类模板的类型推导
+
+C++17后，不必再严格显示的之处所有的模板参数的类型。
+
++ 因为接受了int类型的构造函数，要向编译器要求生成默认构造函数及其全部默认行为；
+
+**推断指引**
+
+存在一个问题，当参数是按照T的引用传递时，参数类型不会被**decay**。
+
+因此，当把引用修改为值传递时，参数会被decay。
+
+可以通过 **推断指引**提供模板参数推断规则，或者**修正**以后的模板参数推断规则。
+
+```c++
+Stack(const char*) -> Stack<std::string>;
+```
+
+**指引语句必须出现和模板类定义相同的作用域或者命名空间内**。
+
+
+
+### 4. 聚合类的初始化
+
+C++17开始可以对聚合类模板使用类型推断指引
+
+```c++
+template<typename T>
+struct ValueWithComment {
+	T value;
+	std::string commmet;
+}
+
+//C++17
+ValueWithCommmet(const char*, const char*) -> ValueWithComment<std::string>;
+ValueWithComment vc2 = {"hello", "world"};
+//若是没有推断指引的话，就不能使用上述初始化方法，因为没有相应的构造函数来完成类型推断。
+```
+
+
+
+## 三、非类型模板参数
+
+
+
+
+
+## 类模板
 
 + 在一个类模板内出现的自身模板名，等价于该模板被调用所生成的实例。
 + 如果类模板参数有默认值，可以在模板实参列表中省略，但是**尖括号**无法省略。

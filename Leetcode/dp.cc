@@ -3,7 +3,6 @@
 #include <numeric> //std::accumulate
 #include <limits> //INT_MAX
 #include <queue>
-#include <cmatch> //sqrt, ceil
 using namespace std;
 
 
@@ -287,6 +286,28 @@ public:
 };
 }
 
-int main() {
-
+namespace hh91 {
+class Solution{
+public:
+    int numDecodings(string s) {
+        const int n = s.length();
+        vector<int> dp(n + 1, 1);
+        int prev = s[0] - '0';
+        if (!prev) return 0;
+        for (int i = 2; i < n + 1; ++i) {
+            int cur = s[i - 1] - '0';
+            if ((prev == 0 || prev > 2) && !cur) return 0;
+            if ((0 < prev && prev < 2) || prev == 2 && cur < 7) {
+                if (cur) {
+                    dp[i] = dp[i - 2] + dp[i - 1];
+                } else {
+                    dp[i] = dp[i - 2];
+                }
+            } else {
+                dp[i] = dp[i - 1];
+            }
+            prev = cur;
+        }
+    }
+};
 }
