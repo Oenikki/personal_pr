@@ -1,5 +1,7 @@
 # 泛型编程
 
+> 摘录自C++模板 第二版
+
 按照习惯，函数和类的声明应放在文件中，实现放在一个主代码文件. 但是模板是随用随生成，并不存在真正函数实现代码。
 
 **明确生成模板实例：**当关键词后没有模板参数列表，而是一个函数声明时，指示编译器根据此函数声明寻找合适的模板实现。
@@ -279,6 +281,379 @@ ValueWithComment vc2 = {"hello", "world"};
 
 
 ## 三、非类型模板参数
+
+模板参数可以是常规数值，不一定非得是某种具体类型。
+
+区别在于：非类型模板参数，待定的不是类型，而是某个数值。
+
+### 1. 类模板的非类型参数
+
+```c++
+template<typename T, std::size_t Maxsize>
+class Stack {
+public:
+	Stack();
+	//...
+};
+
+template<typename T, std::size_t Maxsize>
+Stack<T, Maxsize>::Stack() {}
+//...
+
+//use demo
+Stack<int, 20> int20Stack;
+```
+
+由此可见，第二个参数Maxsize是int类型。
+
+
+
+### 2. 函数模板的非类型参数
+
+```c++
+template<int Val, typename T>
+T addValue(T x) {
+	return x + Val;
+}
+
+//case:
+std::transform(source.begin(), source.end(), dest.begin(), addValue<5, int>);
+```
+
+```
+template<typename Val, typenamt T = decltype(Val)>
+T foo();
+```
+
+
+
+### 3. 非类型模板参数的限制
+
+约束：
+
++ 整形变量（包括枚举）
++ 指向objects/functions/members的指针
++ objects或者functions的左值引用
++ std::nullptr_t (类型：nullptr)
+
+
+
+**浮点数值或者class类型变量都不能作为非类型模板参数使用**。
+
+**当传递对象的指针或引用作为模板参数时，对象不能是字符串常量，临时变量或它的成员及其子对象**
+
+
+
+C++11中，对象必须有**外部链接**
+
+C++14中，对象必须是**外部链接**或**内部链接**
+
+
+
+```c++
+template<const char *name>
+class MyClass {
+	//...
+};
+
+MyClass<"Hello"> x; //error, literal "hello" is not allowed
+
+extern const char s03[] = "hi"; //external linkage
+char const char s11[] = "hi"; //internal linkage
+
+//case
+MyClass<s03> m03;
+MyClass<s11> m11;
+static const char s17[] = "hi";
+MyClass<s17> m17;
+```
+
+
+
+**非类型模板参数可以是任何编译期表达式**：
+
+```
+template<int I, bool B>
+class C;
+
+c<sizeof(int) + 4, sizeof(int) == 4> c;
+```
+
+
+
+### 4. 使用auto作为非模板类型参数的类型
+
+C++17开始，可以不指定非类型模板参数的具体类型，而使用auto。
+
+通过这一特性，可以更为**泛化**固定大小的Stack类。
+
+```
+template<typename T, auto Maxsize>
+class Stack {
+	//...
+};
+
+//auto size() const {
+	//...
+}
+
+
+```
+
+
+
+从C++14，也可以使用auto，让编译期**推断出具体的返回类型**。
+
+```c++
+#include <iostream>
+#include <string>
+#include <array>
+using namespace std;
+
+template<typename T, auto Maxsize>
+class Stack {
+public:
+	using size_type = decltype(Maxsize);
+public:
+	Stack();
+	void push(const T& elem);
+	void pop();
+	const T& top() const;
+	bool empty() const {
+		return num_elements == 0;
+	}
+	size_type size() const {
+		return num_elements;
+	}
+private:
+	std::array<T, Maxsize> elems;
+	size_type num_elements = 0;
+};
+
+template<typename T, auto Maxsize>
+Stack<T, Maxsize>::Stack() : num_elements(0) { }
+
+template<typename T, auto Maxsize>
+void Stack<T, Maxsize>::push(const T& elem) {
+	elems[num_elements] = elem;
+	++num_elements;
+}
+
+template<typename T, auto Maxsize>
+void Stack<T, Maxsize>::pop() {
+	--num_elements;
+}
+
+template<typename T, auto Maxsize>
+const T& Stack<T, Maxsize>::top() const {
+	return elems[num_elements - 1];
+}
+
+int main() {
+
+	Stack<int, 20u> int20Stack;
+	Stack<string, 7> stringStack;
+	int20Stack.push(7);
+	stringStack.push("hello");
+	auto sz1 = int20Stack.size();
+	auto sz2 = stringStack.size();
+	if (!std::is_same_v<decltype(sz1), decltype(sz2)>) {
+		cout << "size type differ" << endl;
+	}
+	cout << int20Stack.top() << endl;
+	return 0;
+}
+```
+
+
+
+## 四、变参模板（variadic template）
+
+C++11始，可以接受有一组数量可变的参数。
+
+变参模板在标准库中的作用：
+
++ 向一个由智能指针管理的，在堆中创建的对象的构造函数传递参数：
+
+```c++
+auto sp = std::make_shard<std::complex<float>>(1.1, 2.2);
+```
+
++ 向一个由库启动的thread传递参数：
+
+```c++
+std::thread(foo, 42, "hello");
+```
+
++ 向一个被push进vector中的对象的构造函数传递参数：
+
+```c++
+std::vector<Customer> v;
+//...
+v.emplace("Tim", "Jovi", 1962);
+```
+
+
+
+### 1. 变参模板
+
+```C++
+void print() {}
+
+template<typename T, typename... Types>
+void print(T first_arg, Types... args) {
+	cout << first_arg << '\n';
+	print(args...);
+}
+```
+
+
+
+**sizeof... 运算符**
+
+>  参数包所包含的参数数目
+
+注意下述代码：
+
+```c++
+template<typename T, typename... Types>
+void print(T first_arg, Types... args) {
+	cout << first_arg << endl;
+	if (sizeof...(args) > 0) { //error if sizeof...(args) == 0
+		print(args...);
+	}
+}
+```
+
+通常函数模板中if语句的两个分支都会被实例化出。是否使用被实例化出的代码时在运行期决定的；而是否实例化代码是在编译期间决定的。
+
+但是自C++17始，可以使用编译期if语句。
+
+
+
+### 2. 折叠表达式
+
+C++17始，提供了一种计算参数包中所有参数计算结果的二元运算符
+
+```c++
+template<typename... T>
+auto foldSum(T... s) {
+	return (... + s);
+}
+```
+
+
+
+```c++
+struct Node {
+	Node() : val(0), left(nullptr), right(nullptr) {}
+	int val;
+	Node *left;
+	Node *right;
+};
+
+auto left = &Node::left;
+auto right = &Node::right;
+
+template<typename T, typename... TP>
+Node *traverse(T np, TP... paths) {
+	return (np->* ... ->* paths);
+}
+```
+
+
+
+Tips: **再次强调一下，若参数按照值传递，那么参数被拷贝，类型也会退化；而按照引用传递的，参数类型不会退化**。
+
+
+
+### 3. 变参类模板和变参表达式
+
+**变参表达式**
+
+```c++
+template<typename T>
+void printDoubled(const T&... args) {
+	print(args + args...);
+}
+```
+
+将所有的参数都翻倍。
+
+
+
+```c++
+template<typename T1, typename... TN>
+constexpr bool isHomogeneous(T1, TN...) {
+	return (std::is_same<T1, TN>::value && ...);
+}
+```
+
+判断参数包中的所有参数类型是否相同。
+
+
+
+**变参下标**
+
+```c++
+template<typename C, typename... Idx>
+void printElems(const C& coll, Idx... idx) {
+	print(coll[idx]...);
+}
+```
+
+按照一组变参下标来访问一个参数中的相应元素。
+
+
+
+**变参类模板**
+
++ 多个模板参数指定class相应数据成员的类型
+
+```c++
+template<typename... Elements>class Tuple;
+Tuple<int, std:string, char> t;
+```
+
++ 定义一组下标类型（参考tuple get函数）
+
+```c++
+template<std::size_t...>
+struct Indices {};
+
+template<typename T, std::size_t... Idx>
+void printByIdx(T t, Indices<Idx...>) {
+	print(std::get<Idx>(t)...);
+}
+```
+
+
+
+**变参推断指引**
+
+```c++
+namespace std {
+	template<typename T, typename... U> array(T, U...)
+	-> array<enable_if_t<(is_same_v<T, U>&& ...), T>, (1 + sizeof...(U))>;
+}
+
+//enable_if_t<> ->
+is_same_v<T, U1> && is_same_v<T, U2> && is_same_v<T, U3> ...
+```
+
+
+
+**变参基类及其使用**
+
+...
+
+
+
+## 五、基础技巧
+
+### 1. typename关键字
+
+
 
 
 
