@@ -404,7 +404,7 @@ std::pair p{v.begin(), v.end()};
 
 
 
-## Chapter 10 编译器if
+## Chapter10 编译器if
 
 ```c++
 if constexpr(...)
@@ -412,3 +412,45 @@ if constexpr(...)
 
 编译器可以计算编译期的条件表达式来在编译期决定一个使用if语句的then还是else部分。其余代码将被**丢弃**，甚至不会生成。
 
+```c++
+template<typename T>
+std::string asString(T x) {
+	if constr (std::is_same_v<T, std::string>) {
+		return x; //如果T不能自动转换为string该语句无效
+	} else if constr (std::is_arithmetic_v(T)) {
+		return std::to_string(x);
+	} else {
+		return std::to_string(x);
+	}
+}
+```
+
+模板在实例化时整个模块作为一个整体编译。然而if语句的条件表达式的检查是运行时的特性。**即使在编译器就能确定表达式的值一定是false，then的部分也必须能通过编译**。
+
+使用编译期if语句时，then和else不可能用到的部分将成为**丢弃的语句**。
+
+
+
+## Chapter11 折叠表达式
+
+refer to CPP template 2nd
+
+...
+
+## Chapter12 处理字符串字面量模板参数
+
+refer to CPP template 2nd
+
+...
+
+## Chapter13 占位符类型作为模板参数
+
+refer to CPP template 2nd
+
+...
+
+## Chapter14 扩展using声明
+
+refer to CPP template 2nd
+
+...

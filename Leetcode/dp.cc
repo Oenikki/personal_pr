@@ -311,3 +311,63 @@ public:
     }
 };
 }
+
+namespace hh139 {
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        const int n = s.length();
+        vector<bool> dp(n + 1, false);
+        dp[0] = true;
+        for (int i = 1; i < n; ++i) {
+            for (const auto& word : wordDict) {
+                int len = word.length();
+                if (i >= len && s.substr(i - len, len) == word) {
+                    dp[i] = dp[i] || dp[i - len];
+                }
+            }
+        }
+        return dp[n];
+    }
+};
+}
+
+namespace hh300 {
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        const int n = nums.size();
+        vector<int> dp(n, 1);
+        int max_length = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < i; ++j) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = std::max(dp[i], dp[j]  + 1);
+                }
+            }
+            max_length = std::max(max_length, dp[i]);
+        }
+        return max_length;
+    }
+};
+}
+
+namespace hh1143 {
+class Solution {
+public:
+    int longestCommonSubsequence(string text1, string text2) {
+        const int m = text1.length(), n = text2.length();
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+        for (int i = 1; i < m; ++i) {
+            for (int j = 1; j < n; ++j) {
+                if (text1[i - 1] == text2[j - 1]) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = std::max(dp[i][j - 1], dp[i - 1][j]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+};
+}
