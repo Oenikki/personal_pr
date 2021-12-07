@@ -653,9 +653,36 @@ is_same_v<T, U1> && is_same_v<T, U2> && is_same_v<T, U3> ...
 
 ### 1. typename关键字
 
+用以**澄清**模板内部一个标识符代表的类型，而不是数据成员。
+
+使用typename的一种场景是声明泛型代码中标准容器的迭代器
+
+```c++
+template<typename T>
+void printcoll(const T& coll) {
+	typename T::const_iterator pos;
+	typename T::const_iterator end(coll.end());
+	for (pos = coll.begin(); pos != end; ++pos) {
+		//...
+	}
+	//...
+}
+```
 
 
 
+### 2. 零初始化
+
++ 对于基础类型，int，double，指针类型，由于没有默认构造函数，不会被默认初始化为一个有意义的值
+
+```c++
+template<typename T>
+void foo() {
+	T x{};
+}
+```
+
+这种初始化方式成为“值初始化"。
 
 
 

@@ -398,4 +398,47 @@ namespace hhknapsack {
         }
         return dp[W];
     }
+
+    //complete knapsack
+    int knapsack3(vector<int>& weights, vector<int>& values, int N, int W) {
+        vector<int> dp(M + 1, 0);
+        for (int i = 1; i < N + 1; ++i) {
+            int w = weight[i - 1], v = values[i - 1];
+            for (int j = w; j < W + 1; ++j) {
+                dp[j] = std::max(dp[j], dp[i][j - w] + v);
+            }
+        }
+        return dp[M];
+    }
+}
+
+namespace hh416 {
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        int sum = std::accumulate(nums.begin(), nums.end(), 0);
+        if (sum & 1) return false;
+        sum /= 2;
+        vector<vector<bool>> dp(n, vector<bool>(M + 1, false));
+        for (int i = 1; i < n; ++i) {
+            for(int j = 1; j < sum + 1; ++j) {
+                if (j >= nums[i - 1]) {
+                    dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums[i - 1]];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[n- 1][sum];
+    }
+};
+}
+
+namespace hh474 {
+class Solution {
+public:
+    int findMaxForm(vector<string>& strs, int m, int n) {
+
+    }
+};
 }
