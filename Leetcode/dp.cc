@@ -401,7 +401,7 @@ namespace hhknapsack {
 
     //complete knapsack
     int knapsack3(vector<int>& weights, vector<int>& values, int N, int W) {
-        vector<int> dp(M + 1, 0);
+        vector<int> dp(W + 1, 0);
         for (int i = 1; i < N + 1; ++i) {
             int w = weight[i - 1], v = values[i - 1];
             for (int j = w; j < W + 1; ++j) {
@@ -438,7 +438,40 @@ namespace hh474 {
 class Solution {
 public:
     int findMaxForm(vector<string>& strs, int m, int n) {
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+        for (const auto& str : strs) {
+            auto [count0, count1] = count(str);
+            for(int )
+                dp[i][j] =
+        }
+    }
+private:
+    pair<int, int> count(const string& str) {
+        int count0 = str.length(), count1 = 0;
+        for (const auto& c : str) {
+            if (c == '1') {
+                ++count1;
+                --count0;
+            }
+        }
+        return make_pair(count0, count1);
+    }
+};
+}
 
+namespace hh322 {
+class Solution {
+    int coinChange(vector<int>& coins, int amount) {
+        vector<int> dp(amount + 1, amount + 2);
+        dp[0] = 0;
+        for (int i = 1; i < amount + 1; ++i) {
+            for (const auto& coin : coins) {
+                if (i >= coins) {
+                    dp[i] = std::min(dp[i], dp[i - coin] + 1);
+                }
+            }
+        }
+        return dp[amount] >= amount + 2 ? -1 : dp[amount];
     }
 };
 }
