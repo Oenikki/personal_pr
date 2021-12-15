@@ -3,6 +3,7 @@
 #include <numeric> //std::accumulate
 #include <limits> //INT_MAX
 #include <queue>
+#include <cmath>
 using namespace std;
 
 
@@ -374,14 +375,14 @@ public:
 
 namespace hhknapsack {
     int knapsack(vector<int>& weights, vector<int>& values, int N, int W) {
-        vector<vector<int>> dp(N + 1, vector<int>(M + 1, 0));
+        vector<vector<int>> dp(N + 1, vector<int>(W + 1, 0));
         for (int i = 1; i < N + 1; ++i) {
             int w = weights[i - 1], v = values[i - 1];
             for (int j = 1; j < W + 1; ++j) {
                 if (j >= w) {
                     dp[i][j] = std::max(dp[i - 1][j], dp[i - 1][j - w] + v);
                 } else {
-                    dp[i][j] = dp[i - 1][j]
+                    dp[i][j] = dp[i - 1][j];
                 }
             }
         }
@@ -403,12 +404,12 @@ namespace hhknapsack {
     int knapsack3(vector<int>& weights, vector<int>& values, int N, int W) {
         vector<int> dp(W + 1, 0);
         for (int i = 1; i < N + 1; ++i) {
-            int w = weight[i - 1], v = values[i - 1];
+            int w = weights[i - 1], v = values[i - 1];
             for (int j = w; j < W + 1; ++j) {
-                dp[j] = std::max(dp[j], dp[i][j - w] + v);
+                dp[j] = std::max(dp[j], dp[j - w] + v);
             }
         }
-        return dp[M];
+        return dp[W];
     }
 }
 
@@ -419,17 +420,20 @@ public:
         int sum = std::accumulate(nums.begin(), nums.end(), 0);
         if (sum & 1) return false;
         sum /= 2;
-        vector<vector<bool>> dp(n, vector<bool>(M + 1, false));
+        const int n = nums.size();
+        vector<vector<bool>> dp(n, vector<bool>(sum + 1, false));
+        for (int i = 0; i < n; ++i) {
+            dp[i][0] = true;
+        }
         for (int i = 1; i < n; ++i) {
-            for(int j = 1; j < sum + 1; ++j) {
-                if (j >= nums[i - 1]) {
+            for (int j = 1; j < sum + 1; ++j) {
+                if (j >= nums[i - 1])
                     dp[i][j] = dp[i - 1][j] || dp[i - 1][j - nums[i - 1]];
-                } else {
+                else
                     dp[i][j] = dp[i - 1][j];
-                }
             }
         }
-        return dp[n- 1][sum];
+        return dp[n - 1][sum];
     }
 };
 }
@@ -441,17 +445,21 @@ public:
         vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
         for (const auto& str : strs) {
             auto [count0, count1] = count(str);
-            for(int )
-                dp[i][j] =
+            for (int i = m; i >= count0; --i) {
+                for (int j = n; j >= count1; --j) {
+                    dp[i][j] = std::max(dp[i][j], 1 + dp[i - count0][j - count1]);
+                }
+            }
         }
+        return dp[m][n];
     }
 private:
     pair<int, int> count(const string& str) {
         int count0 = str.length(), count1 = 0;
         for (const auto& c : str) {
             if (c == '1') {
-                ++count1;
                 --count0;
+                ++count1;
             }
         }
         return make_pair(count0, count1);
@@ -466,12 +474,66 @@ class Solution {
         dp[0] = 0;
         for (int i = 1; i < amount + 1; ++i) {
             for (const auto& coin : coins) {
-                if (i >= coins) {
+                if (i >= coin) {
                     dp[i] = std::min(dp[i], dp[i - coin] + 1);
                 }
             }
         }
         return dp[amount] >= amount + 2 ? -1 : dp[amount];
+    }
+};
+}
+
+namespace hh72 {
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        const int len1 = word1.length();
+        const int len2 = word2.length();
+        vector<vector<int>> dp(len1 + 1, vector<int>(len2 + 1, 0));
+        for (int i = 0; i < len1 + 1; ++i) {
+            for (int j = 0; j < len2 + 1; ++j) {
+                if (i == 0) {
+                    dp[i][j] = j;
+                } else if (j == 0) {
+                    dp[i][j] = i;
+                } else {
+                    dp[i][j] = std::min(dp[i - 1][j - 1] + (word1[i - 1] == word2[j - 1] ? 0 : 1),
+                    std::min(dp[i - 1][j] + 1, dp[i][j - 1] + 1));
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
+};
+}
+
+namespace hh650 {
+class Solution {
+public:
+    int minSteps(int n) {
+        vector<int> dp(n + 1, 0);
+        dp[1] = 0;
+        int h = static_cast<int>(sqrt(n));
+        for (int i = 2; i < n + 1; ++i) {
+            dp[i] = i; // i is prime number
+            for (int j = 2; j <= h; ++j) {
+                if (i % j == 0) {
+                    dp[i] = dp[j] + dp[i / j]; //update when find the maximum factor (j)
+                    break;
+                }
+            }
+        }
+        return dp[n];
+    }
+};
+}
+
+namespace hh10 {
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+
     }
 };
 }
