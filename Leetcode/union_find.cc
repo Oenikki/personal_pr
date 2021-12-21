@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <unordered_map>
 using namespace std;
 
 namespace hh684 {
@@ -91,18 +92,81 @@ public:
 }
 
 namespace hh146 {
+struct DLinkedNode {
+    int key, value;
+    DLinkedNode *prev;
+    DLinkedNode *next;
+    DLinkedNode() : key(0), value(0), prev(nullptr), next(nullptr) {}
+    DLinkedNode(int key, int value)
+        : key(key), value(value),
+          prev(nullptr), next(nullptr) {}
+};
+
 class LRUCache {
 public:
-    LRUCache(int capacity) {
-
+    LRUCache(int capacity) : capacity(capacity) {
+        head = new DLinkedNode();
+        tail = new DLinkedNode();
+        head->next = tail;
+        tail->prev = head;
     }
 
     int get(int key) {
-
+        if (!cache.count(key)) {
+            return -1;
+        }
+        auto node = cache.at(key);
+        moveToHead(node);
+        return node->value;
     }
 
     void put(int key, int value) {
+        if (cache.count(key)) {
+            auto node = cache.at(key);
+            node->value = value;
+            moveToHead(node);
+        } else {
+            auto new_node = new DLinkedNode(key, value);
+            cache.emplace(key, new_node);
+            addToHead(new_node);
+            ++size;
+            if (size > capacity) {
+                auto remove_node = removeTail();
+                cache.erase(remove_node->key);
+                delete remove_node;
+                --size;
+            }
 
+        }
     }
+
+    void moveToHead(DLinkedNode *node) {
+        removeNode(node);
+        addToHead(node);
+    }
+
+    void removeNode(DLinkedNode *node) {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+
+    void addToHead(DLinkedNode *node) {
+        node->next = head->next;
+        head->next->prev = node;
+        node->prev = head;
+        head->next = node;
+    }
+
+    DLinkedNode *removeTail() {
+        auto remove_node = tail->prev;
+        removeNode(remove_node);
+        return remove_node;
+    }
+private:
+    unordered_map<int, DLinkedNode*> cache;
+    DLinkedNode *head;
+    DLinkedNode *tail;
+    int size = 0;
+    int capacity;
 };
 }
