@@ -7,6 +7,7 @@
 
 int min_distance = INT_MAX;
 
+namespace dfs_method {
 void dfs(int cur, int dist, int e,
          std::vector<bool>& visited,
          std::vector<std::vector<int>>& distance) {
@@ -20,11 +21,53 @@ void dfs(int cur, int dist, int e,
     for (int j = 0; j < distance.size(); ++j) {
         if (distance[cur][j] != -1 && !visited[j]) {
             visited[j] = true;
-            dfs(j, distance[cur][j], e, visited, distance);
+            dfs(j, dist + distance[cur][j], e, visited, distance);
             visited[j] = false;
         }
     }
     return;
+}
+}
+
+namespace floyd_method {
+void floyd(std::vector<std::vector<int>>& distance) {
+    const int virtex = distance.size();
+    for (int k = 0; k < virtex; ++k) {
+        for (int i = 0; i < virtex; ++i) {
+            for (int j = 0; j < virtex; ++j) {
+                if (distance[i][k] + distance[k][j] < distance[i][j]) {
+                    distance[i][j] = distance[i][k] + distance[k][j];
+                }
+            }
+        }
+    }
+}
+}
+
+namespace dijkstra_method {
+void dijkstra(const std::vector<std::vector<int>>& distance,
+              std::vector<int>& dist,
+              std::vector<bool>& visited) {
+    int min_distance;
+    int s;
+    for (int i = 0; i < distance.size(); ++i) {
+        min_distance = INT_MAX;
+        for (int j = 0; j < distance.size(); ++j) {
+            if (!visited[j] && dist[j] < min_distance) {
+                min_distance = dist[j];
+                s = j;
+            }
+        }
+        visited[s] = true;
+        for (int k = 0; k < distance.size(); ++k) {
+            if (distance[s][k] != -1) {
+                if (dist[k] > dist[s] + distance[s][k]) {
+                    dist[k] = dist[s] + distance[s][k];
+                }
+            }
+        }
+    }
+}
 }
 
 int main() {
@@ -32,8 +75,8 @@ int main() {
     std::ifstream ifs(file_name, std::ios::binary);
     std::stringstream ss;
     std::string line;
-    int e = 0;
-    std::cin >> e;
+    int end = 0;
+    std::cin >> end;
     int vertex = 0, edge = 0;
     int i = 0, j = 0, weight = 0;
     bool first_row = true;
@@ -68,8 +111,29 @@ int main() {
         std::cout << std::endl;
     }
 
-    std::vector<bool> visited(distance.size(), false);
-    dfs(0, 0, e, visited, distance);
+    int flag;
+    std::cin >> flag;
+    switch (flag) {
+        case 1: {
+            std::vector<bool> visited(distance.size(), false);
+            dfs_method::dfs(0, 0, end, visited, distance);
+        }
+        break;
+        case 2: {
+            floyd_method::floyd(distance);
+        }
+        break;
+        case 3: {
+            std::vector<int> dist;
+            dist.resize(distance.size());
+            for (int i = 0; i < distance.size(); ++i) {
+                dist[i] = distance[0][i];
+            }
+            std::vector<bool> visited(distance.size(), false);
+            visited[0] = true;
+            dijkstra_method::dijkstra(distance, dist, visited);
+        }
+    }
     std::cout << "min distance: " << min_distance << std::endl;
     return 0;
 }

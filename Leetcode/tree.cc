@@ -1,9 +1,7 @@
 #include <vector>
-#include <algorithm> //std::max
-#include <unordered_set>
-#include <unordered_map>
-#include <queue>
-#include <stack>
+#include <algorithm> //std::max #include <unordered_set> #include
+<unordered_map> #include <queue> <<<<<<< HEAD #include <stack> ======= >>>>>>>
+2a2d6526285407d62ae9b2dda09c72911844efe4
 
 using namespace std;
 
@@ -135,7 +133,96 @@ private:
         }
         node->left = helper(node->left, dict, forest, deleted);
         node->right = helper(node->right, dict, forest, deleted);
-        return deleted ? nullptr : node
+        return deleted ? nullptr : node;
+    }
+};
+}
+
+namespace hh637 {
+class Solution {
+    vector<double> averageOfLevels(TreeNode *root) {
+        if (!root) {
+            return {};
+        }
+        vector<double> res;
+        queue<TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            double sum = .0;
+            size_t sz = q.size();
+            for (size_t i = 0; i < sz; ++i) {
+                auto node = q.front();
+                q.pop();
+                sum += node->val;
+                if (node->left) {
+                    q.push(node->left);
+                }
+                if (node->right) {
+                    q.push(node->right);
+                }
+            }
+            res.push_back(sum / (double)sz);
+        }
+        return res;
+    }
+};
+}
+
+namespace hh105 {
+class Solution {
+public:
+    TreeNode *buildTree(vector<int>& preorder, vector<int>& inorder) {
+        if (preorder.empty()) {
+            return nullptr;
+        }
+        int root = preorder[0];
+        unordered_map<int, int> map; //map every root info
+        for (int i = 0; i < inorder.size(); ++i) {
+            map.emplace(inorder[i], i);
+        }
+        return helper(map, preorder, 0, preorder.size() - 1, 0);
+    }
+private:
+    TreeNode *helper(const unordered_map<int, int>& map,
+                     const vector<int>& preorder,
+                     int inorder_s, int inorder_e,
+                     int preorder_s) {
+        if (inorder_s > inorder_e) {
+            return nullptr;
+        }
+        int mid = preorder[preorder_s];
+        int index = map.at(mid);
+        int left_len = index - inorder_s - 1;
+        TreeNode *node = new TreeNode(mid);
+        node->left = helper(map, preorder, inorder_s, index - 1, preorder_s + 1);
+        node->right = helper(map, preorder, index + 1, inorder_e, preorder_s + left_len + 2);
+        return node;
+    }
+};
+}
+
+namespace hh144 {
+class Solution {
+public:
+    vector<int> preorderTraversal(TreeNode *root) {
+        vector<int> res;
+        if (!root) {
+            return res;
+        }
+        stack<int> s;
+        s.push(root);
+        while (!stack.empty()) {
+            auto node = stack.top();
+            stack.pop();
+            res.push_back(node->val);
+            if (node->right) {
+                stack.push(node->right);
+            }
+            if (node->left) {
+                stack.push(node->left);
+            }
+        }
+        return res;
     }
 };
 }
