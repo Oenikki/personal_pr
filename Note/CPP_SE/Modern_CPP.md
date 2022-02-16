@@ -579,11 +579,98 @@ left value
 
 # 四、容器
 
+## 1. 线性容器
+
+**std::array**
+
++ 大小固定
++ 相对于传统的数组，`std::array`能够让代码变得更加现代化
 
 
 
+**std::forward_list**
+
+用法和`std::list`类似，使用单向链表实现
 
 
 
+## 2. 无序容器
 
+C++11引入了`std::unordered_map`/`std::unordered_multimap`/`std::unordered_set`/`std::unordered_multiset`
+
+
+
+### 元组
+
+**基本操作**
+
++ std::make_tuple
++ std::get
++ std::tie
+
+
+
+C++14增加了使用类型来获得元组中的对象
+
+```c++
+std::tuple<std::string, double, double, int> t("hello", 1.1, 2.2, 3);
+std::cout << std::get<std::string>(t) << endl;
+std::cout << std::get<double>(t) << endl; //error
+```
+
+
+
+**运行期索引**
+
+`std::get<>`依赖一个**编译期常量**。
+
+C++17引入了`std::variant<>`，提供给variant<>的类型模板参数可以让一个variant<>从而容纳提供的计种类型的变量。
+
+```c++
+template<size_t n, typename... T>
+constexpr std::variant<T...> _tuple_index(const std::tuple<T...>& tp1, size_t i) {
+	if constexpr (n >= sizeof...(T)) {
+		throw std::out_of_range("out of range.\n");
+	}
+	if (i == n) {
+		return std::variant<T...> { std::in_place_index<n>, std::get<n>(tp1) };
+	}
+	return _tuple_index<n < sizeof...(T) - 1 ? n + 1 : 0>(tp1, i);
+}
+
+template<typename... T>
+constexpr std::variant<T...> tuple_index(const std::tuple<T...>& tp1, size_t i) {
+	return _tuple_index<0>(tp1, i);
+}
+
+template<typename T0, typename... Ts>
+std::ostream& operator<<(std::ostream& s, const std::variant<T0, Ts...>& v) {
+	std::visit([&](auto&& x) { s << x; }, v);
+	return s;
+}
+
+int i = 1;
+std::cout << tuple_index(t, i) << std::endl;
+```
+
+
+
+**元组合并和遍历**
+
+```c++
+auto new_tuple = std::tuple_cat(get_student(1), std::move(t));
+```
+
+
+
+```c++
+template<typename T>
+auto tuple_len(T& tp1) {
+	return std::tuple_size<T>::value;
+}
+
+for (int i = 0; i != tuple_len(new_tuple); ++i) {
+	cout << tuple_index(new_tuple, i) << endl;
+}
+```
 
