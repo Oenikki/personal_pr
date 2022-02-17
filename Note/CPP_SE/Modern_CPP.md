@@ -674,3 +674,103 @@ for (int i = 0; i != tuple_len(new_tuple); ++i) {
 }
 ```
 
+
+
+# 五、智能指针与内存管理
+
+## 1. RAII与引用计数
+
+引用计数是防止内存泄漏而产生的。
+
+RAII（资源获取即初始化技术）：构造时候申请空间，析构函数在离开作用域的时候释放空间。
+
+智能指针，引入了引用技术的想法，无需关心手动释放内存。
+
+`std::shared_ptr`/`std::unique_ptr`/`std::weak_ptr`
+
+
+
+## 2. std::shared_ptr
+
+```c++
+void foo(std::shared_ptr<int> i) {
+	(*i)++;
+}
+
+auto pointer = new int(1); //no direct assignment
+
+auto pointer = std::make_shared<int>(10);
+foo(pointer);
+
+auto pointer2 = pointer; //引用计数 +1
+int *p = pointer.get();
+```
+
++ make_shared消除显示使用的new
++ get()获取原始指针
++ reset()减少引用技术，通过use_count()查看一个对象的引用技术
+
+
+
+## 3. std::unique_ptr
+
+独占的智能指针，禁止其他智能指针与其共享同一个对象。
+
+```c++
+std::unique_ptr<int> pointer = std::make_unique<int>(10);
+std::unique_ptr<int> pointer2 = pointer; //非法
+```
+
+std::make_unique从C++14后引入
+
+```c++
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args) {
+	return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+```
+
+
+
+## 4. std::weak_ptr
+
+````c++
+struct A;
+strcut B;
+struct A {
+	std::shared_ptr<B> pointer;
+}
+struct B {
+	std::shared_ptr<A> pointer;
+}
+
+{
+    auto a = std::make_shared<A>();
+    auto b = std::make_shared<B>();
+    a->pointer = b;
+    b->pointer = a;
+}
+````
+
+运行结果就是A，B都不会被销毁，因为引用计数2。
+
+使用weak_ptr可以解决。
+
+std::weak_ptr没有*和->运算符，不能对资源进行操作，可以用于检查std::shared_ptr是否存在。
+
+
+
+# 六、正则表达式
+
+使用正则表达式主要实现实现三个需求：
+
++ 检查一个串是否包含某种形式的字串
++ 子串替换
++ 从串中取出符合条件的字串
+
+
+
+
+
+
+
